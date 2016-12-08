@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>宛名印刷</title>
+	<style type="text/css">
+		body{
+		}
+		@page{
+			size: 100mm 148mm;
+			margin: 0;
+		}
+		@media screen{
+			body{
+				background: #F7F7F7;
+			}
+			.sheet{
+				background: white;
+				box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);
+				margin: 5mm;
+			}
+		}
+		/*@media print{
+			body{
+				width: 100mm;
+				height: 148mm;
+			}
+		}*/
+		.sheet{
+			width: 100mm;
+			height: 148mm;
+			background-image: url(hagaki.png);
+			background-size: contain;
+			page-break-after: always;
+		}
+		.zipcodeTo{
+			font-size: 1.7em;
+			letter-spacing: 0.326em;
+		}
+		.addressTo{
+			writing-mode: vertical-rl;
+			-ms-writing-mode: tb-rl;
+			-webkit-writing-mode: vertical-rl;
+			height: 110mm;
+			width: 100%;
+			font-size: 1.4em;
+			vertical-align: bottom;
+			text-align: left;
+		}
+		.nameTo{
+			writing-mode: vertical-rl;
+			-ms-writing-mode: tb-rl;
+			-webkit-writing-mode: vertical-rl;
+			height: 110mm;
+			font-size: 3em;
+			text-align: center;
+			letter-spacing: 0.2em;
+		}
+		.zipcodeFrom{
+			width: 95%;
+			font-size: 1.2em;
+			letter-spacing: 0.17em;
+			text-align: center;
+		}
+		.addressFrom{
+			writing-mode: vertical-rl;
+			-ms-writing-mode: tb-rl;
+			-webkit-writing-mode: vertical-rl;
+			height: 50mm;
+			text-align: right;
+		}
+		.nameFrom{
+			writing-mode: vertical-rl;
+			-ms-writing-mode: tb-rl;
+			-webkit-writing-mode: vertical-rl;
+			height: 50mm;
+			font-size: 1.4em;
+			text-align: right;
+		}
+	</style>
+</head>
+<body>
+<h2>宛名印刷</h2>
+<div>1. 宛名データを以下の記法に従って(.txtか.csv)で選択してください。<br></div>
+<div style="width: 95mm; border: 2px solid #DDDDDD;"><宛名データの記法><br><span style="color: #444444">苗字 名前, 敬称, 郵便番号, 住所, 有効(1)or無効(0)<br>苗字 名前, 敬称, 郵便番号, 住所, 有効(1)or無効(0)<br>・・・</span><br>※<b>一番上の行は差出人のデータです。</b><br>※差出人を印刷しない場合は<br>一番上の行を空行にしてください。</div>
+<div style="height: 1em;"></div>
+<input type="file" id="selectFile" value="ファイル選択" />
+<div style="height: 1em;"></div>
+<div>2. プレビューを確認して印刷ボタンを押してください。<br>※印刷の設定から印刷サイズをはがきサイズ(100×148mm)に設定して、2ページ以降を印刷してください。</div>
+<div style="height: 1em;"></div>
+<input type="button" value="印刷する" onclick="window.print();" />
+<h4>【プレビュー】</h4>
+
+<div style="page-break-after: always;"></div>
+
+<!-- <section class="sheet" id="printArea">
+	<table>
+		<tr style="height: 9.2mm; font-size: 1em;">
+			<td style="width: 43mm;"><div>&nbsp;</div></td>
+			<td><div>&nbsp;</div></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><div class="zipcodeTo">0608612</div></td>
+		</tr>
+	</table>
+	<table>
+		<tr style="height: 90mm;">
+			<td style="width: 45mm;">
+				<table style="height: 90mm; width: 100%;">
+				<tr style="height: 50mm;"></tr>
+					<tr>
+						<td style="width: 12mm;"></td>
+						<td style="width: 10mm;"><div class="nameFrom">札幌 太郎</div></td>
+						<td style="width: 5mm;"><div class="addressFrom">北海道札幌市中央区北1条西2丁目1-7</div></td>
+						<td style="width: 8mm;"></td>
+					</tr>
+				</table>
+			</td>
+			<td style="width: 15mm;"><div class="nameTo">中央 花子 様</div></td>
+			<td style="width: 35mm;"><div class="addressTo">北海道札幌市中央区南3条西11丁目330番地2</div></td>
+			<td style="width: 5mm;"></td>
+		</tr>
+		<tr style="height: 14mm;">
+			<td><div class="zipcodeFrom">0600001</div></td>
+		</tr>
+	</table>
+</section> -->
+
+<!-- <section class="sheet" id="printArea"><table><tr style="height: 9.2mm; font-size: 1em;"><td style="width: 43mm;"><div>&nbsp;</div></td><td><div>&nbsp;</div></td></tr><tr><td></td><td><div class="zipcodeTo">0608612</div></td></tr></table><table><tr style="height: 90mm;"><td style="width: 45mm;"><table style="height: 90mm; width: 100%;"><tr style="height: 50mm;"></tr><tr><td style="width: 12mm;"></td><td style="width: 10mm;"><div class="nameFrom">札幌 太郎</div></td><td style="width: 5mm;"><div class="addressFrom">北海道札幌市中央区北1条西2丁目1-7</div></td><td style="width: 8mm;"></td></tr></table></td><td style="width: 15mm;"><div class="nameTo">中央 花子 様</div></td><td style="width: 35mm;"><div class="addressTo">北海道札幌市中央区南3条西11丁目330番地2</div></td><td style="width: 5mm;"></td></tr><tr style="height: 14mm;"><td><div class="zipcodeFrom">0600001</div></td></tr></table></section> -->
+
+<section class="sheet" id="printArea"></section>
+
+<script type="text/javascript">
+	if(window.File && window.FileReader && window.FileList && window.Blob){
+		var source;
+		document.getElementById("selectFile").addEventListener("change", function(evt){
+			var file = evt.target.files && evt.target.files[0];
+			console.log(evt.target.files);
+			if(file){
+				// var reg = /(.*)(?:\.([^.]+$))/;
+				// var fileName = file.name;
+				// var ext = fileName.match(reg) && fileName.match(reg)[2];
+				var reader = new FileReader();
+				try{
+					reader.readAsText(file);
+				}catch(error){
+					alert("File's extension should be text.");
+				}
+				reader.onload = function(ev){
+					source = reader.result;
+					console.log(source);
+
+					var addressArray = [];
+					var newLineRegex = /(.*)\n/g;
+					var addressBookRegex = /(.+) (.+)[ |　|\t]*,[ |　|\t]*(\d\d\d)-(\d\d\d\d)[ |　|\t]*,[ |　|\t]*(.+)[ |　|\t]*,[ |　|\t]*([^0])/m;
+					source.match(newLineRegex).forEach(function(v, i){
+						addressArray.push(v.match(addressBookRegex));
+					});
+					console.log(addressArray);
+					
+					var zipcodeFrom = "";
+					var addressFrom = "";
+					var nameFrom = "";
+					var exportString = "";
+					addressArray.forEach(function(v, i){
+						if(i === 0){
+							nameFrom = v[1] + " " + v[2];
+							zipcodeFrom = v[3] + v[4];
+							addressFrom = v[5];
+						}else{
+							var nameTo = v[1] + " " + v[2] + " 様";
+							var zipcodeTo = v[3] + v[4];
+							var addressTo = v[5];
+							exportString += '<section class="sheet" id="printArea"><table><tr style="height: 9.2mm; font-size: 1em;"><td style="width: 43mm;"><div>&nbsp;</div></td><td><div>&nbsp;</div></td></tr><tr><td></td><td><div class="zipcodeTo">' + zipcodeTo + '</div></td></tr></table><table><tr style="height: 90mm;"><td style="width: 45mm;"><table style="height: 90mm; width: 100%;"><tr style="height: 50mm;"></tr><tr><td style="width: 12mm;"></td><td style="width: 10mm;"><div class="nameFrom">' + nameFrom + '</div></td><td style="width: 5mm;"><div class="addressFrom">' + addressFrom + '</div></td><td style="width: 8mm;"></td></tr></table></td><td style="width: 15mm;"><div class="nameTo">' + nameTo + '</div></td><td style="width: 35mm;"><div class="addressTo">' + addressTo + '</div></td><td style="width: 5mm;"></td></tr><tr style="height: 14mm;"><td><div class="zipcodeFrom">' + zipcodeFrom + '</div></td></tr></table></section>';
+						}
+					});
+					document.getElementById("printArea").outerHTML = exportString;
+				}
+			}
+		});
+	}else{
+		alert('The File APIs are not fully supported in this browser.');
+	}
+</script>
+</body>
+</html>
+
+<!-- 参考Webページ -->
+<!-- http://qiita.com/cognitom/items/d39d5f19054c8c8fd592 -->
+<!-- http://sterfield.co.jp/designer/css%E3%81%A0%E3%81%91%E3%81%A7%E7%B8%A6%E6%9B%B8%E3%81%8D%E3%82%92%E8%A1%A8%E7%8F%BE%E3%81%99%E3%82%8B/ -->
