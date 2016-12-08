@@ -126,8 +126,6 @@
 	</table>
 </section> -->
 
-<!-- <section class="sheet" id="printArea"><table><tr style="height: 9.2mm; font-size: 1em;"><td style="width: 43mm;"><div>&nbsp;</div></td><td><div>&nbsp;</div></td></tr><tr><td></td><td><div class="zipcodeTo">0608612</div></td></tr></table><table><tr style="height: 90mm;"><td style="width: 45mm;"><table style="height: 90mm; width: 100%;"><tr style="height: 50mm;"></tr><tr><td style="width: 12mm;"></td><td style="width: 10mm;"><div class="nameFrom">札幌 太郎</div></td><td style="width: 5mm;"><div class="addressFrom">北海道札幌市中央区北1条西2丁目1-7</div></td><td style="width: 8mm;"></td></tr></table></td><td style="width: 15mm;"><div class="nameTo">中央 花子 様</div></td><td style="width: 35mm;"><div class="addressTo">北海道札幌市中央区南3条西11丁目330番地2</div></td><td style="width: 5mm;"></td></tr><tr style="height: 14mm;"><td><div class="zipcodeFrom">0600001</div></td></tr></table></section> -->
-
 <section class="sheet" id="printArea"></section>
 
 <script type="text/javascript">
@@ -144,11 +142,11 @@
 				try{
 					reader.readAsText(file);
 				}catch(error){
-					alert("File's extension should be text.");
+					alert("File's extension should be text or csv.");
 				}
 				reader.onload = function(ev){
 					source = reader.result;
-					console.log(source);
+					// console.log(source);
 
 					var addressArray = [];
 					var newLineRegex = /(.*)\n/g;
@@ -163,15 +161,19 @@
 					var nameFrom = "";
 					var exportString = "";
 					addressArray.forEach(function(v, i){
-						if(i === 0){
+						if(i === 0 && v !== null){
 							nameFrom = v[1] + " " + v[2];
 							zipcodeFrom = v[3] + v[4];
 							addressFrom = v[5];
-						}else{
+						}else if(v !== null){
 							var nameTo = v[1] + " " + v[2] + " 様";
 							var zipcodeTo = v[3] + v[4];
 							var addressTo = v[5];
 							exportString += '<section class="sheet" id="printArea"><table><tr style="height: 9.2mm; font-size: 1em;"><td style="width: 43mm;"><div>&nbsp;</div></td><td><div>&nbsp;</div></td></tr><tr><td></td><td><div class="zipcodeTo">' + zipcodeTo + '</div></td></tr></table><table><tr style="height: 90mm;"><td style="width: 45mm;"><table style="height: 90mm; width: 100%;"><tr style="height: 50mm;"></tr><tr><td style="width: 12mm;"></td><td style="width: 10mm;"><div class="nameFrom">' + nameFrom + '</div></td><td style="width: 5mm;"><div class="addressFrom">' + addressFrom + '</div></td><td style="width: 8mm;"></td></tr></table></td><td style="width: 15mm;"><div class="nameTo">' + nameTo + '</div></td><td style="width: 35mm;"><div class="addressTo">' + addressTo + '</div></td><td style="width: 5mm;"></td></tr><tr style="height: 14mm;"><td><div class="zipcodeFrom">' + zipcodeFrom + '</div></td></tr></table></section>';
+						}else{
+							nameFrom = "";
+							zipcodeFrom = "";
+							addressFrom = "";
 						}
 					});
 					document.getElementById("printArea").outerHTML = exportString;
