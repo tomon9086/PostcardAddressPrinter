@@ -157,7 +157,7 @@
 					// console.log(source);
 					var addressArray = [];
 					var newLineRegex = /(.*)[\n|\r|\r\n]/g;
-					var addressBookRegex = /(.+) (.+)[ |　|\t]*,[ |　|\t]*(\d\d\d)-(\d\d\d\d)[ |　|\t]*,[ |　|\t]*(.+)[ |　|\t]*,[ |　|\t]*([^0])/m;
+					var addressBookRegex = /(.+) (.+)[ |　|\t]*,[ |　|\t]*(\d\d\d)-(\d\d\d\d)[ |　|\t]*,[ |　|\t]*(.+)[ |　|\t]*,[ |　|\t]*([1-9])/m;
 					source.match(newLineRegex).forEach(function(v, i){
 						addressArray.push(v.match(addressBookRegex));
 					});
