@@ -81,7 +81,7 @@
 <body>
 <h2>宛名印刷</h2>
 <div>1. 宛名データを以下の記法に従って(.txtか.csv)で選択してください。<br>続けて読み込むと増えます。</div>
-<div style="width: 95mm; border: 2px solid #DDDDDD;"><宛名データの記法><br><span style="color: #444444">苗字 名前, 敬称, 郵便番号, 住所, 有効(1)or無効(0)<br>苗字 名前, 敬称, 郵便番号, 住所, 有効(1)or無効(0)<br>・・・</span><br>※<b>一番上の行は差出人のデータです。</b><br>※差出人を印刷しない場合は<br>一番上の行を空行にしてください。</div>
+<div style="width: 95mm; border: 2px solid #DDDDDD;"><宛名データの記法><br><span style="color: #444444">苗字 名前, 郵便番号, 住所, 有効(1)or無効(0)<br>苗字 名前, 郵便番号, 住所, 有効(1)or無効(0)<br>・・・</span><br>※<b>一番上の行は差出人のデータです。</b><br>※差出人を印刷しない場合は<br>一番上の行を空行にしてください。</div>
 <div style="height: 1em;"></div>
 <input type="radio" id="utf8" name="charCode" checked="checked" />UTF-8
 <input type="radio" id="shiftJis" name="charCode" />Shift-JIS
@@ -135,7 +135,7 @@
 		var source;
 		document.getElementById("selectFile").addEventListener("change", function(evt){
 			var file = evt.target.files && evt.target.files[0];
-			console.log(evt.target.files);
+			// console.log(evt.target.files);
 			if(file){
 				var charCode = "";
 				if(document.getElementById("utf8").checked){
@@ -154,7 +154,6 @@
 				}
 				reader.onload = function(ev){
 					source = reader.result;
-					console.log(encodeURIComponent(source));
 					// console.log(source);
 					var addressArray = [];
 					var newLineRegex = /(.*)\n/g;
