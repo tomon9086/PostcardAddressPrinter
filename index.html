@@ -154,7 +154,11 @@
 					source.match(newLineRegex).forEach(function(v, i){
 						addressArray.push(v.match(addressBookRegex));
 					});
-					console.log(addressArray);
+					// console.log(addressArray);
+					if(addressArray.length > 2000){
+						alert("Too many addresses imported. (> 2000)");
+						return;
+					}
 					
 					var zipcodeFrom = "";
 					var addressFrom = "";
