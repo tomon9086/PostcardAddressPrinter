@@ -156,12 +156,12 @@
 					source = reader.result;
 					// console.log(source);
 					var addressArray = [];
-					var newLineRegex = /(.*)\n/g;
+					var newLineRegex = /(.*)[\n|\r]/g;
 					var addressBookRegex = /(.+) (.+)[ |　|\t]*,[ |　|\t]*(\d\d\d)-(\d\d\d\d)[ |　|\t]*,[ |　|\t]*(.+)[ |　|\t]*,[ |　|\t]*([^0])/m;
 					source.match(newLineRegex).forEach(function(v, i){
 						addressArray.push(v.match(addressBookRegex));
 					});
-					// console.log(addressArray);
+					console.log(addressArray);
 					if(addressArray.length > 2000){
 						alert("Too many addresses imported. (> 2000)");
 						return;
@@ -181,10 +181,12 @@
 							var zipcodeTo = v[3] + v[4];
 							var addressTo = v[5];
 							exportString += '<section class="sheet" id="printArea"><table><tr style="height: 9.2mm; font-size: 1em;"><td style="width: 43mm;"><div>&nbsp;</div></td><td><div>&nbsp;</div></td></tr><tr><td></td><td><div class="zipcodeTo">' + zipcodeTo + '</div></td></tr></table><table><tr style="height: 90mm;"><td style="width: 45mm;"><table style="height: 90mm; width: 100%;"><tr style="height: 50mm;"></tr><tr><td style="width: 12mm;"></td><td style="width: 10mm;"><div class="nameFrom">' + nameFrom + '</div></td><td style="width: 5mm;"><div class="addressFrom">' + addressFrom + '</div></td><td style="width: 8mm;"></td></tr></table></td><td style="width: 15mm;"><div class="nameTo">' + nameTo + '</div></td><td style="width: 35mm;"><div class="addressTo">' + addressTo + '</div></td><td style="width: 5mm;"></td></tr><tr style="height: 14mm;"><td><div class="zipcodeFrom">' + zipcodeFrom + '</div></td></tr></table></section>';
-						}else{
+						}else if(i === 0 && v === null){
 							nameFrom = "";
 							zipcodeFrom = "";
 							addressFrom = "";
+						}else{
+							
 						}
 					});
 					document.getElementById("printArea").outerHTML = exportString;
