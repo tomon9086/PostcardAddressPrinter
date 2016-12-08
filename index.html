@@ -79,15 +79,15 @@
 	</style>
 </head>
 <body>
-<h2>宛名印刷</h2>
+<h2>宛名印刷<span style="font-size: 0.9em;">(Chrome/FireFox推奨)</span></h2>
 <div>1. 宛名データを以下の記法に従って(.txtか.csv)で選択してください。<br>続けて読み込むと増えます。</div>
 <div style="width: 95mm; border: 2px solid #DDDDDD;"><宛名データの記法><br><span style="color: #444444">苗字 名前, 郵便番号, 住所, 有効(1)or無効(0)<br>苗字 名前, 郵便番号, 住所, 有効(1)or無効(0)<br>・・・</span><br>※<b>一番上の行は差出人のデータです。</b><br>※差出人を印刷しない場合は<br>一番上の行を空行にしてください。</div>
 <div style="height: 1em;"></div>
-<input type="radio" id="utf8" name="charCode" checked="checked" />UTF-8
-<input type="radio" id="shiftJis" name="charCode" />Shift-JIS
+<input type="radio" id="utf8" name="charCode" checked="checked" /><span>UTF-8</span>
+<input type="radio" id="shiftJis" name="charCode" /><span>Shift-JIS</span>
 <input type="file" id="selectFile" value="ファイル選択" />
 <div style="height: 1em;"></div>
-<div>2. プレビューを確認して印刷ボタンを押してください。<br>※印刷の設定から印刷サイズをはがきサイズ(100×148mm)に設定して、2ページ以降を印刷してください。</div>
+<div>2. プレビューを確認して印刷ボタンを押してください。<br>※印刷の設定から印刷サイズをはがきサイズ(100×148mm)に設定して、3ページめ以降を印刷してください。</div>
 <div style="height: 1em;"></div>
 <input type="button" value="印刷する" onclick="window.print();" />
 <h4>【プレビュー】</h4>
