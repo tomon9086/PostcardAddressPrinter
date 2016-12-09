@@ -80,7 +80,7 @@
 </head>
 <body>
 <h2>宛名印刷<span style="font-size: 0.9em;">(Chrome/FireFox推奨)</span></h2>
-<div>1. 宛名データを以下の記法に従って(.txtか.csv)で選択してください。<br>続けて読み込むと増えます。</div>
+<div>1. 宛名データを以下の記法に従って(.txtか.csv)で選択してください。<br>続けて読み込むと最後に読み込んだファイルが適用されます。</div>
 <div style="width: 95mm; border: 2px solid #DDDDDD;"><宛名データの記法><br><span style="color: #444444">苗字 名前, 郵便番号, 住所, 有効(1)or無効(0)<br>苗字 名前, 郵便番号, 住所, 有効(1)or無効(0)<br>・・・</span><br>※<b>一番上の行は差出人のデータです。</b><br>※差出人を印刷しない場合は<br>一番上の行を空行にしてください。</div>
 <div style="height: 1em;"></div>
 <input type="radio" id="utf8" name="charCode" checked="checked" /><span>UTF-8</span>
@@ -90,6 +90,7 @@
 <div>2. プレビューを確認して印刷ボタンを押してください。<br>※印刷の設定から印刷サイズをはがきサイズ(100×148mm)に設定して、3ページめ以降を印刷してください。</div>
 <div style="height: 1em;"></div>
 <input type="button" value="印刷する" onclick="window.print();" />
+<input type="button" value="リセット" onclick="location.reload();" />
 <h4>【プレビュー】</h4>
 
 <div style="page-break-after: always;"></div>
@@ -128,12 +129,14 @@
 	</table>
 </section> -->
 
-<section class="sheet" id="printArea"></section>
+<div id="printAreaSet"><section class="sheet" id="printArea"></section></div>
 
 <script type="text/javascript">
 	if(window.File && window.FileReader && window.FileList && window.Blob){
-		var source;
+		var source = "";
 		document.getElementById("selectFile").addEventListener("change", function(evt){
+			document.getElementById("printAreaSet").innerHTML = '<section class="sheet" id="printArea"></section>';
+
 			var file = evt.target.files && evt.target.files[0];
 			// console.log(evt.target.files);
 			if(file){
