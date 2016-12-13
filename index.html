@@ -76,112 +76,214 @@
 			font-size: 1.4em;
 			text-align: right;
 		}
+
+		.sheetCanvas{
+			width: 100mm;
+			height: 148mm;
+		}
 	</style>
 </head>
 <body>
-<h2>宛名印刷</h2>
-<div>1. 宛名データを以下の記法に従って(.txtか.csv)で選択してください。<br>続けて読み込むと増えます。</div>
-<div style="width: 95mm; border: 2px solid #DDDDDD;"><宛名データの記法><br><span style="color: #444444">苗字 名前, 敬称, 郵便番号, 住所, 有効(1)or無効(0)<br>苗字 名前, 敬称, 郵便番号, 住所, 有効(1)or無効(0)<br>・・・</span><br>※<b>一番上の行は差出人のデータです。</b><br>※差出人を印刷しない場合は<br>一番上の行を空行にしてください。</div>
+<h2>宛名印刷<span style="font-size: 0.9em;">(Chrome/FireFox推奨)</span></h2>
+<div>1. 宛名データを以下の記法に従って(.txtか.csv)で選択してください。<br>続けて読み込むと最後に読み込んだファイルが適用されます。</div>
+<div style="width: 95mm; border: 2px solid #DDDDDD;"><宛名データの記法><br><span style="color: #444444">苗字 名前, 郵便番号, 住所, 有効(1)or無効(0)<br>苗字 名前, 郵便番号, 住所, 有効(1)or無効(0)<br>・・・</span><br>※<b>一番上の行は差出人のデータです。</b><br>※差出人を印刷しない場合は<br>一番上の行を空行にしてください。</div>
 <div style="height: 1em;"></div>
+<input type="radio" id="utf8" name="charCode" checked="checked" /><span>UTF-8</span>
+<input type="radio" id="shiftJis" name="charCode" /><span>Shift-JIS</span>
 <input type="file" id="selectFile" value="ファイル選択" />
 <div style="height: 1em;"></div>
-<div>2. プレビューを確認して印刷ボタンを押してください。<br>※印刷の設定から印刷サイズをはがきサイズ(100×148mm)に設定して、2ページ以降を印刷してください。</div>
+<div>2. プレビューを確認して印刷ボタンを押してください。<br>※印刷の設定から印刷サイズをはがきサイズ(100×148mm)に設定して、3ページめ以降を印刷してください。</div>
 <div style="height: 1em;"></div>
 <input type="button" value="印刷する" onclick="window.print();" />
+<input type="button" value="リセット" onclick="resetButtonOnClick();" />
 <h4>【プレビュー】</h4>
 
 <div style="page-break-after: always;"></div>
 
 <!-- <section class="sheet" id="printArea">
-	<table>
-		<tr style="height: 9.2mm; font-size: 1em;">
-			<td style="width: 43mm;"><div>&nbsp;</div></td>
-			<td><div>&nbsp;</div></td>
-		</tr>
-		<tr>
-			<td></td>
-			<td><div class="zipcodeTo">0608612</div></td>
-		</tr>
-	</table>
-	<table>
-		<tr style="height: 90mm;">
-			<td style="width: 45mm;">
-				<table style="height: 90mm; width: 100%;">
-				<tr style="height: 50mm;"></tr>
-					<tr>
-						<td style="width: 12mm;"></td>
-						<td style="width: 10mm;"><div class="nameFrom">札幌 太郎</div></td>
-						<td style="width: 5mm;"><div class="addressFrom">北海道札幌市中央区北1条西2丁目1-7</div></td>
-						<td style="width: 8mm;"></td>
-					</tr>
-				</table>
-			</td>
-			<td style="width: 15mm;"><div class="nameTo">中央 花子 様</div></td>
-			<td style="width: 35mm;"><div class="addressTo">北海道札幌市中央区南3条西11丁目330番地2</div></td>
-			<td style="width: 5mm;"></td>
-		</tr>
-		<tr style="height: 14mm;">
-			<td><div class="zipcodeFrom">0600001</div></td>
-		</tr>
-	</table>
+	<canvas class="sheetCanvas" id="hagaki_0"></canvas>
 </section> -->
 
-<section class="sheet" id="printArea"></section>
+<div id="printAreaSet"><section class="sheet" id="printArea"></section></div>
 
 <script type="text/javascript">
 	if(window.File && window.FileReader && window.FileList && window.Blob){
-		var source;
+		var source = "";
 		document.getElementById("selectFile").addEventListener("change", function(evt){
+			document.getElementById("printAreaSet").innerHTML = '<section class="sheet" id="printArea"></section>';
+
 			var file = evt.target.files && evt.target.files[0];
-			console.log(evt.target.files);
+			// console.log(evt.target.files);
 			if(file){
-				// var reg = /(.*)(?:\.([^.]+$))/;
-				// var fileName = file.name;
-				// var ext = fileName.match(reg) && fileName.match(reg)[2];
+				var charCode = "";
+				if(document.getElementById("utf8").checked){
+					charCode = "utf-8";
+				}else if(document.getElementById("shiftJis").checked){
+					charCode = "shift-jis";
+				}else{
+					alert("Fatal Error!");
+					throw new Error("fatal error");
+				}
 				var reader = new FileReader();
 				try{
-					reader.readAsText(file);
+					reader.readAsText(file, charCode);
 				}catch(error){
 					alert("File's extension should be text or csv.");
 				}
 				reader.onload = function(ev){
 					source = reader.result;
 					// console.log(source);
-
 					var addressArray = [];
-					var newLineRegex = /(.*)\n/g;
-					var addressBookRegex = /(.+) (.+)[ |　|\t]*,[ |　|\t]*(\d\d\d)-(\d\d\d\d)[ |　|\t]*,[ |　|\t]*(.+)[ |　|\t]*,[ |　|\t]*([^0])/m;
-					source.match(newLineRegex).forEach(function(v, i){
+					var newLineRegex = /(.*)[\n|\r|\r\n]/g;
+					var addressBookRegex = /(.+) (.+)[ |　|\t]*,[ |　|\t]*(\d\d\d)-(\d\d\d\d)[ |　|\t]*,[ |　|\t]*(.+)[ |　|\t]*,[ |　|\t]*([1-9])/m;
+					var receiverArray = source.match(newLineRegex);
+					receiverArray.forEach(function(v, i){
 						addressArray.push(v.match(addressBookRegex));
 					});
 					console.log(addressArray);
+					if(addressArray.length > 2000){
+						alert("Too many addresses imported. (> 2000)");
+						return;
+					}
+
+					var exportString = "";
+					for(let i = 1; i < receiverArray.length; i++){
+						exportString += '<section class="sheet" id="printArea"><canvas class="sheetCanvas" id="hagaki_' + i + '"></canvas></section>'
+					}
+					document.getElementById("printArea").outerHTML = exportString;
 					
 					var zipcodeFrom = "";
 					var addressFrom = "";
 					var nameFrom = "";
-					var exportString = "";
 					addressArray.forEach(function(v, i){
+						if(i !== 0 && v !== null){
+							document.getElementById("hagaki_" + i).setAttribute("width", 100 * 10);
+							document.getElementById("hagaki_" + i).setAttribute("height", 148 * 10);
+							var canvas = document.getElementById("hagaki_" + i);
+							var canvasText = document.getElementById("hagaki_" + i).getContext("2d");
+						}
 						if(i === 0 && v !== null){
-							nameFrom = v[1] + " " + v[2];
+							nameFrom = {last: v[1], first: v[2]};
 							zipcodeFrom = v[3] + v[4];
 							addressFrom = v[5];
 						}else if(v !== null){
-							var nameTo = v[1] + " " + v[2] + " 様";
-							var zipcodeTo = v[3] + v[4];
-							var addressTo = v[5];
-							exportString += '<section class="sheet" id="printArea"><table><tr style="height: 9.2mm; font-size: 1em;"><td style="width: 43mm;"><div>&nbsp;</div></td><td><div>&nbsp;</div></td></tr><tr><td></td><td><div class="zipcodeTo">' + zipcodeTo + '</div></td></tr></table><table><tr style="height: 90mm;"><td style="width: 45mm;"><table style="height: 90mm; width: 100%;"><tr style="height: 50mm;"></tr><tr><td style="width: 12mm;"></td><td style="width: 10mm;"><div class="nameFrom">' + nameFrom + '</div></td><td style="width: 5mm;"><div class="addressFrom">' + addressFrom + '</div></td><td style="width: 8mm;"></td></tr></table></td><td style="width: 15mm;"><div class="nameTo">' + nameTo + '</div></td><td style="width: 35mm;"><div class="addressTo">' + addressTo + '</div></td><td style="width: 5mm;"></td></tr><tr style="height: 14mm;"><td><div class="zipcodeFrom">' + zipcodeFrom + '</div></td></tr></table></section>';
-						}else{
+							zipcodeToDisplay(v[3] + v[4], canvasText);
+							addressToDisplay(v[5], canvasText);
+							nameToDisplay(v[1], v[2], "様", canvasText);
+							zipcodeFromDisplay(zipcodeFrom, canvasText);
+							addressFromDisplay(addressFrom, canvasText);
+							nameFromDisplay(nameFrom.last, nameFrom.first, canvasText);
+						}else if(i === 0 && v === null){
 							nameFrom = "";
 							zipcodeFrom = "";
 							addressFrom = "";
+						}else{
+							
 						}
 					});
-					document.getElementById("printArea").outerHTML = exportString;
 				}
 			}
 		});
 	}else{
 		alert('The File APIs are not fully supported in this browser.');
+	}
+
+	function resetButtonOnClick(){
+		var select = confirm("Do you want to Reset?");
+		if(select){
+			location.reload();
+		}else{
+		}
+	}
+
+	function zipcodeToDisplay(str, canvasText){
+		canvasText.font = "90px Arial";
+		canvasText.textAlign = "center";
+		canvasText.fillText(str[0], 470, 193);
+		canvasText.fillText(str[1], 540, 193);
+		canvasText.fillText(str[2], 610, 193);
+		canvasText.fillText(str[3], 690, 193);
+		canvasText.fillText(str[4], 755, 193);
+		canvasText.fillText(str[5], 825, 193);
+		canvasText.fillText(str[6], 895, 193);
+	}
+	function zipcodeFromDisplay(str, canvasText){
+		canvasText.font = "65px Arial";
+		canvasText.textAlign = "center";
+		canvasText.fillText(str[0], 80, 1432);
+		canvasText.fillText(str[1], 120, 1432);
+		canvasText.fillText(str[2], 160, 1432);
+		canvasText.fillText(str[3], 210, 1432);
+		canvasText.fillText(str[4], 249, 1432);
+		canvasText.fillText(str[5], 289, 1432);
+		canvasText.fillText(str[6], 329, 1432);
+	}
+	function addressToDisplay(str, canvasText){
+		const fontSize = 70;
+		const whenNewLine = 1200;
+		var count = 0;
+		canvasText.font = fontSize + "px Arial";
+		canvasText.textAlign = "center";
+		Array.prototype.forEach.call(str, function(v, i){
+			if(fontSize * (i + 1) < whenNewLine * 1){
+				canvasText.fillText(v, 870, 320 + fontSize * i);
+				count++;
+			}else if(fontSize * (i + 1) < whenNewLine * 2){
+				canvasText.fillText(v, 870 - fontSize, 320 + fontSize * (i % count));
+			}
+		});
+	}
+	function addressFromDisplay(str, canvasText){
+		const fontSize = 45;
+		const whenNewLine = 600;
+		var count = 0;
+		canvasText.font = fontSize + "px Arial";
+		canvasText.textAlign = "center";
+		Array.prototype.forEach.call(str, function(v, i){
+			if(fontSize * (i + 1) < whenNewLine * 1){
+				canvasText.fillText(v, 300, 800 + fontSize * i);
+				count++;
+			}else if(fontSize * (i + 1) < whenNewLine * 2){
+				canvasText.fillText(v, 300 - fontSize, 800 + fontSize * (i % count));
+			}
+		});
+	}
+	function nameToDisplay(last, first, honorific, canvasText){
+		const fontSize = 130;
+		const letterSpacing = 40;
+		const space = 60;
+		canvasText.font = fontSize + "px Arial";
+		canvasText.textAlign = "center";
+		var wholePix = last.length * (fontSize + letterSpacing) - letterSpacing + space + first.length * (fontSize + letterSpacing) - letterSpacing + space + honorific.length * (fontSize + letterSpacing) - letterSpacing;
+		var pixLastStart = 950 - wholePix / 2;
+		var pixFirstStart = pixLastStart + last.length * (fontSize + letterSpacing) - letterSpacing + space;
+		var pixHonorificStart = pixFirstStart + first.length * (fontSize + letterSpacing) - letterSpacing + space;
+		Array.prototype.forEach.call(last, function(v, i){
+			canvasText.fillText(v, 500, pixLastStart + (fontSize + letterSpacing) * i - letterSpacing);
+		});
+		Array.prototype.forEach.call(first, function(v, i){
+			canvasText.fillText(v, 500, pixFirstStart + (fontSize + letterSpacing) * i - letterSpacing);
+		});
+		Array.prototype.forEach.call(honorific, function(v, i){
+			canvasText.fillText(v, 500, pixHonorificStart + (fontSize + letterSpacing) * i - letterSpacing);
+		});
+	}
+	function nameFromDisplay(last, first, canvasText){
+		const fontSize = 60;
+		const letterSpacing = 10;
+		const space = 20;
+		canvasText.font = fontSize + "px Arial";
+		canvasText.textAlign = "center";
+		var wholePix = last.length * (fontSize + letterSpacing) - letterSpacing + space + first.length * (fontSize + letterSpacing) - letterSpacing;
+		var pixLastStart = 1200 - wholePix / 2;
+		var pixFirstStart = pixLastStart + last.length * (fontSize + letterSpacing) - letterSpacing + space;
+
+		Array.prototype.forEach.call(last, function(v, i){
+			canvasText.fillText(v, 135, pixLastStart + (fontSize + letterSpacing) * i - letterSpacing);
+		});
+		Array.prototype.forEach.call(first, function(v, i){
+			canvasText.fillText(v, 135, pixFirstStart + (fontSize + letterSpacing) * i - letterSpacing);
+		});
 	}
 </script>
 </body>
