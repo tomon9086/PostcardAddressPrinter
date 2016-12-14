@@ -148,8 +148,8 @@
 		}
 
 		var exportString = "";
-		for(let i = 1; i < receiverArray.length; i++){
-			exportString += '<section class="sheet" id="printArea"><canvas class="sheetCanvas" id="hagaki_' + i + '"></canvas></section>'
+		for(let i = 1; i < addressArray.length; i++){
+			exportString += '<section class="sheet" id="printArea"><canvas class="sheetCanvas" id="hagaki_' + i + '"></canvas></section>';
 		}
 		document.getElementById("printArea").outerHTML = exportString;
 
