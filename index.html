@@ -29,7 +29,8 @@
 			width: 100mm;
 			height: 148mm;
 			background-image: url(hagaki.png);
-			background-size: contain;
+			/*box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);*/
+			background-size: cover;
 			page-break-after: always;
 		}
 		.sheetCanvas{
@@ -60,6 +61,7 @@
 </section> -->
 
 <div id="printAreaSet"><section class="sheet" id="printArea"></section></div>
+
 
 <script type="text/javascript">
 	if(window.File && window.FileReader && window.FileList && window.Blob){
@@ -154,24 +156,24 @@
 	function zipcodeToDisplay(str, canvasText){
 		canvasText.font = "90px Arial";
 		canvasText.textAlign = "center";
-		canvasText.fillText(str[0], 470, 193);
-		canvasText.fillText(str[1], 540, 193);
-		canvasText.fillText(str[2], 610, 193);
-		canvasText.fillText(str[3], 690, 193);
-		canvasText.fillText(str[4], 755, 193);
-		canvasText.fillText(str[5], 825, 193);
-		canvasText.fillText(str[6], 895, 193);
+		canvasText.fillText(str[0], 467, 193);
+		canvasText.fillText(str[1], 537, 193);
+		canvasText.fillText(str[2], 607, 193);
+		canvasText.fillText(str[3], 685, 193);
+		canvasText.fillText(str[4], 752, 193);
+		canvasText.fillText(str[5], 822, 193);
+		canvasText.fillText(str[6], 892, 193);
 	}
 	function zipcodeFromDisplay(str, canvasText){
 		canvasText.font = "65px Arial";
 		canvasText.textAlign = "center";
-		canvasText.fillText(str[0], 80, 1432);
-		canvasText.fillText(str[1], 120, 1432);
-		canvasText.fillText(str[2], 160, 1432);
-		canvasText.fillText(str[3], 210, 1432);
-		canvasText.fillText(str[4], 249, 1432);
-		canvasText.fillText(str[5], 289, 1432);
-		canvasText.fillText(str[6], 329, 1432);
+		canvasText.fillText(str[0], 65, 1466);
+		canvasText.fillText(str[1], 105, 1466);
+		canvasText.fillText(str[2], 145, 1466);
+		canvasText.fillText(str[3], 196, 1466);
+		canvasText.fillText(str[4], 236, 1466);
+		canvasText.fillText(str[5], 276, 1466);
+		canvasText.fillText(str[6], 316, 1466);
 	}
 	function addressToDisplay(str, canvasText){
 		const fontSize = 70;
@@ -196,10 +198,10 @@
 		canvasText.textAlign = "center";
 		Array.prototype.forEach.call(str, function(v, i){
 			if(fontSize * (i + 1) < whenNewLine * 1){
-				canvasText.fillText(v, 300, 800 + fontSize * i);
+				canvasText.fillText(v, 300, 836 + fontSize * i);
 				count++;
 			}else if(fontSize * (i + 1) < whenNewLine * 2){
-				canvasText.fillText(v, 300 - fontSize, 800 + fontSize * (i % count));
+				canvasText.fillText(v, 300 - fontSize, 836 + fontSize * (i % count));
 			}
 		});
 	}
@@ -230,7 +232,7 @@
 		canvasText.font = fontSize + "px Arial";
 		canvasText.textAlign = "center";
 		var wholePix = last.length * (fontSize + letterSpacing) - letterSpacing + space + first.length * (fontSize + letterSpacing) - letterSpacing;
-		var pixLastStart = 1200 - wholePix / 2;
+		var pixLastStart = 1236 - wholePix / 2;
 		var pixFirstStart = pixLastStart + last.length * (fontSize + letterSpacing) - letterSpacing + space;
 
 		Array.prototype.forEach.call(last, function(v, i){
