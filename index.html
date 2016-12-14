@@ -26,12 +26,12 @@
 			}
 		}*/
 		.sheet{
-			width: 100mm;
+			/*width: 100mm;
 			height: 148mm;
 			background-image: url(hagaki.png);
-			/*box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);*/
+			box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);
 			background-size: cover;
-			page-break-after: always;
+			page-break-after: always;*/
 		}
 		.sheetCanvas{
 			width: 100mm;
@@ -50,6 +50,8 @@
 <div style="height: 1em;"></div>
 <div>2. プレビューを確認して印刷ボタンを押してください。<br>※印刷の設定から印刷サイズをはがきサイズ(100×148mm)に設定して、3ページめ以降を印刷してください。</div>
 <div style="height: 1em;"></div>
+<input type="radio" onchange="hagakiOnChange();" id="normal" name="kind" checked="checked" /><span>普通はがき</span>
+<input type="radio" onchange="hagakiOnChange();" id="nenga" name="kind" /><span>年賀はがき</span>
 <input type="button" value="印刷する" onclick="window.print();" />
 <input type="button" value="リセット" onclick="resetButtonOnClick();" />
 <h4>【プレビュー】</h4>
@@ -64,11 +66,11 @@
 
 
 <script type="text/javascript">
+	var kind = "";
+	var source = "";
+	hagakiOnChange();
 	if(window.File && window.FileReader && window.FileList && window.Blob){
-		var source = "";
 		document.getElementById("selectFile").addEventListener("change", function(evt){
-			document.getElementById("printAreaSet").innerHTML = '<section class="sheet" id="printArea"></section>';
-
 			var file = evt.target.files && evt.target.files[0];
 			// console.log(evt.target.files);
 			if(file){
@@ -90,54 +92,7 @@
 				reader.onload = function(ev){
 					source = reader.result;
 					// console.log(source);
-					var addressArray = [];
-					var newLineRegex = /(.*)[\n|\r|\r\n]/g;
-					var addressBookRegex = /(.+) (.+)[ |　|\t]*,[ |　|\t]*(\d\d\d)-(\d\d\d\d)[ |　|\t]*,[ |　|\t]*(.+)[ |　|\t]*,[ |　|\t]*([1-9])/m;
-					var receiverArray = source.match(newLineRegex);
-					receiverArray.forEach(function(v, i){
-						addressArray.push(v.match(addressBookRegex));
-					});
-					console.log(addressArray);
-					if(addressArray.length > 2000){
-						alert("Too many addresses imported. (> 2000)");
-						return;
-					}
-
-					var exportString = "";
-					for(let i = 1; i < receiverArray.length; i++){
-						exportString += '<section class="sheet" id="printArea"><canvas class="sheetCanvas" id="hagaki_' + i + '"></canvas></section>'
-					}
-					document.getElementById("printArea").outerHTML = exportString;
-					
-					var zipcodeFrom = "";
-					var addressFrom = "";
-					var nameFrom = "";
-					addressArray.forEach(function(v, i){
-						if(i !== 0 && v !== null){
-							document.getElementById("hagaki_" + i).setAttribute("width", 100 * 10);
-							document.getElementById("hagaki_" + i).setAttribute("height", 148 * 10);
-							var canvas = document.getElementById("hagaki_" + i);
-							var canvasText = document.getElementById("hagaki_" + i).getContext("2d");
-						}
-						if(i === 0 && v !== null){
-							nameFrom = {last: v[1], first: v[2]};
-							zipcodeFrom = v[3] + v[4];
-							addressFrom = v[5];
-						}else if(v !== null){
-							zipcodeToDisplay(v[3] + v[4], canvasText);
-							addressToDisplay(v[5], canvasText);
-							nameToDisplay(v[1], v[2], "様", canvasText);
-							zipcodeFromDisplay(zipcodeFrom, canvasText);
-							addressFromDisplay(addressFrom, canvasText);
-							nameFromDisplay(nameFrom.last, nameFrom.first, canvasText);
-						}else if(i === 0 && v === null){
-							nameFrom = "";
-							zipcodeFrom = "";
-							addressFrom = "";
-						}else{
-							
-						}
-					});
+					hagakiGenerator(kind, source);
 				}
 			}
 		});
@@ -145,12 +100,90 @@
 		alert('The File APIs are not fully supported in this browser.');
 	}
 
+	function hagakiOnChange(opt){
+		if(document.getElementById("normal").checked){
+			kind = "normal";
+			Array.prototype.forEach.call(document.getElementsByClassName("sheet"), function(v, i){
+				v.setAttribute("style", "width: 100mm; height: 148mm; background-image: url(hagaki.png); background-size: cover; page-break-after: always;");
+			});
+		}else if(document.getElementById("nenga").checked){
+			kind = "nenga";
+			Array.prototype.forEach.call(document.getElementsByClassName("sheet"), function(v, i){
+				v.setAttribute("style", "width: 100mm; height: 148mm; background-image: url(nenga.png); background-size: cover; page-break-after: always;");
+			});
+		}
+		if(!opt){
+			if(source){
+				hagakiGenerator(kind, source);
+			}else{
+			}
+		}else{
+		}
+	}
+
+
 	function resetButtonOnClick(){
 		var select = confirm("Do you want to Reset?");
 		if(select){
 			location.reload();
 		}else{
 		}
+	}
+
+	function hagakiGenerator(kind, source){
+		document.getElementById("printAreaSet").innerHTML = '<section class="sheet" id="printArea"></section>';
+		var addressArray = [];
+		var newLineRegex = /(.*)[\n|\r|\r\n]/g;
+		var addressBookRegex = /(.+) (.+)[ |　|\t]*,[ |　|\t]*(\d\d\d)-(\d\d\d\d)[ |　|\t]*,[ |　|\t]*(.+)[ |　|\t]*,[ |　|\t]*([1-9])/m;
+		var receiverArray = source.match(newLineRegex);
+		receiverArray.forEach(function(v, i){
+			if(v.match(addressBookRegex) !== null){
+				addressArray.push(v.match(addressBookRegex));
+			}
+		});
+		console.log(addressArray);
+		if(addressArray.length > 2000){
+			alert("Too many addresses imported. (> 2000)");
+			return;
+		}
+
+		var exportString = "";
+		for(let i = 1; i < receiverArray.length; i++){
+			exportString += '<section class="sheet" id="printArea"><canvas class="sheetCanvas" id="hagaki_' + i + '"></canvas></section>'
+		}
+		document.getElementById("printArea").outerHTML = exportString;
+
+		hagakiOnChange(1);
+		
+		var zipcodeFrom = "";
+		var addressFrom = "";
+		var nameFrom = "";
+		addressArray.forEach(function(v, i){
+			if(i !== 0 && v !== null){
+				document.getElementById("hagaki_" + i).setAttribute("width", 100 * 10);
+				document.getElementById("hagaki_" + i).setAttribute("height", 148 * 10);
+				var canvas = document.getElementById("hagaki_" + i);
+				var canvasText = document.getElementById("hagaki_" + i).getContext("2d");
+			}
+			if(i === 0 && v !== null){
+				nameFrom = {last: v[1], first: v[2]};
+				zipcodeFrom = v[3] + v[4];
+				addressFrom = v[5];
+			}else if(v !== null){
+				zipcodeToDisplay(v[3] + v[4], canvasText);
+				addressToDisplay(v[5], canvasText);
+				nameToDisplay(v[1], v[2], "様", canvasText);
+				zipcodeFromDisplay(zipcodeFrom, kind, canvasText);
+				addressFromDisplay(addressFrom, kind, canvasText);
+				nameFromDisplay(nameFrom.last, nameFrom.first, kind, canvasText);
+			}else if(i === 0 && v === null){
+				nameFrom = "";
+				zipcodeFrom = "";
+				addressFrom = "";
+			}else{
+				
+			}
+		});
 	}
 
 	function zipcodeToDisplay(str, canvasText){
@@ -164,33 +197,43 @@
 		canvasText.fillText(str[5], 822, 193);
 		canvasText.fillText(str[6], 892, 193);
 	}
-	function zipcodeFromDisplay(str, canvasText){
+	function zipcodeFromDisplay(str, kind, canvasText){
+		if(kind === "nenga"){
+			correction = -153;
+		}else{
+			correction = 0;
+		}
 		canvasText.font = "65px Arial";
 		canvasText.textAlign = "center";
-		canvasText.fillText(str[0], 65, 1466);
-		canvasText.fillText(str[1], 105, 1466);
-		canvasText.fillText(str[2], 145, 1466);
-		canvasText.fillText(str[3], 196, 1466);
-		canvasText.fillText(str[4], 236, 1466);
-		canvasText.fillText(str[5], 276, 1466);
-		canvasText.fillText(str[6], 316, 1466);
+		canvasText.fillText(str[0], 65, 1466 + correction);
+		canvasText.fillText(str[1], 105, 1466 + correction);
+		canvasText.fillText(str[2], 145, 1466 + correction);
+		canvasText.fillText(str[3], 196, 1466 + correction);
+		canvasText.fillText(str[4], 236, 1466 + correction);
+		canvasText.fillText(str[5], 276, 1466 + correction);
+		canvasText.fillText(str[6], 316, 1466 + correction);
 	}
 	function addressToDisplay(str, canvasText){
 		const fontSize = 70;
-		const whenNewLine = 1200;
+		const whenNewLine = 1100;
 		var count = 0;
 		canvasText.font = fontSize + "px Arial";
 		canvasText.textAlign = "center";
 		Array.prototype.forEach.call(str, function(v, i){
 			if(fontSize * (i + 1) < whenNewLine * 1){
-				canvasText.fillText(v, 870, 320 + fontSize * i);
+				canvasText.fillText(v, 870, 330 + fontSize * i);
 				count++;
 			}else if(fontSize * (i + 1) < whenNewLine * 2){
-				canvasText.fillText(v, 870 - fontSize, 320 + fontSize * (i % count));
+				canvasText.fillText(v, 870 - fontSize, 330 + fontSize * (i % count));
 			}
 		});
 	}
-	function addressFromDisplay(str, canvasText){
+	function addressFromDisplay(str, kind, canvasText){
+		if(kind === "nenga"){
+			correction = -153;
+		}else{
+			correction = 0;
+		}
 		const fontSize = 45;
 		const whenNewLine = 600;
 		var count = 0;
@@ -198,10 +241,10 @@
 		canvasText.textAlign = "center";
 		Array.prototype.forEach.call(str, function(v, i){
 			if(fontSize * (i + 1) < whenNewLine * 1){
-				canvasText.fillText(v, 300, 836 + fontSize * i);
+				canvasText.fillText(v, 300, 836 + fontSize * i + correction);
 				count++;
 			}else if(fontSize * (i + 1) < whenNewLine * 2){
-				canvasText.fillText(v, 300 - fontSize, 836 + fontSize * (i % count));
+				canvasText.fillText(v, 300 - fontSize, 836 + fontSize * (i % count) + correction);
 			}
 		});
 	}
@@ -225,14 +268,19 @@
 			canvasText.fillText(v, 500, pixHonorificStart + (fontSize + letterSpacing) * i - letterSpacing);
 		});
 	}
-	function nameFromDisplay(last, first, canvasText){
+	function nameFromDisplay(last, first, kind, canvasText){
+		if(kind === "nenga"){
+			correction = -153;
+		}else{
+			correction = 0;
+		}
 		const fontSize = 60;
 		const letterSpacing = 10;
 		const space = 20;
 		canvasText.font = fontSize + "px Arial";
 		canvasText.textAlign = "center";
 		var wholePix = last.length * (fontSize + letterSpacing) - letterSpacing + space + first.length * (fontSize + letterSpacing) - letterSpacing;
-		var pixLastStart = 1236 - wholePix / 2;
+		var pixLastStart = 1236 + correction - wholePix / 2;
 		var pixFirstStart = pixLastStart + last.length * (fontSize + letterSpacing) - letterSpacing + space;
 
 		Array.prototype.forEach.call(last, function(v, i){
@@ -241,6 +289,101 @@
 		Array.prototype.forEach.call(first, function(v, i){
 			canvasText.fillText(v, 135, pixFirstStart + (fontSize + letterSpacing) * i - letterSpacing);
 		});
+	}
+
+	class Hagaki{
+		constructer(id){
+			this.canvasText = document.getElementById(id).getContext("2d");
+		}
+		zipcodeToDisplay(str){
+			this.canvasText.font = "90px Arial";
+			this.canvasText.textAlign = "center";
+			this.canvasText.fillText(str[0], 467, 193);
+			this.canvasText.fillText(str[1], 537, 193);
+			this.canvasText.fillText(str[2], 607, 193);
+			this.canvasText.fillText(str[3], 685, 193);
+			this.canvasText.fillText(str[4], 752, 193);
+			this.canvasText.fillText(str[5], 822, 193);
+			this.canvasText.fillText(str[6], 892, 193);
+		}
+		zipcodeFromDisplay(str){
+			this.canvasText.font = "65px Arial";
+			this.canvasText.textAlign = "center";
+			this.canvasText.fillText(str[0], 65, 1466);
+			this.canvasText.fillText(str[1], 105, 1466);
+			this.canvasText.fillText(str[2], 145, 1466);
+			this.canvasText.fillText(str[3], 196, 1466);
+			this.canvasText.fillText(str[4], 236, 1466);
+			this.canvasText.fillText(str[5], 276, 1466);
+			this.canvasText.fillText(str[6], 316, 1466);
+		}
+		addressToDisplay(str){
+			const fontSize = 70;
+			const whenNewLine = 1200;
+			var count = 0;
+			this.canvasText.font = fontSize + "px Arial";
+			this.canvasText.textAlign = "center";
+			Array.prototype.forEach.call(str, function(v, i){
+				if(fontSize * (i + 1) < whenNewLine * 1){
+					this.canvasText.fillText(v, 870, 320 + fontSize * i);
+					count++;
+				}else if(fontSize * (i + 1) < whenNewLine * 2){
+					this.canvasText.fillText(v, 870 - fontSize, 320 + fontSize * (i % count));
+				}
+			});
+		}
+		addressFromDisplay(str){
+			const fontSize = 45;
+			const whenNewLine = 600;
+			var count = 0;
+			this.canvasText.font = fontSize + "px Arial";
+			this.canvasText.textAlign = "center";
+			Array.prototype.forEach.call(str, function(v, i){
+				if(fontSize * (i + 1) < whenNewLine * 1){
+					this.canvasText.fillText(v, 300, 836 + fontSize * i);
+					count++;
+				}else if(fontSize * (i + 1) < whenNewLine * 2){
+					this.canvasText.fillText(v, 300 - fontSize, 836 + fontSize * (i % count));
+				}
+			});
+		}
+		nameToDisplay(last, first, honorific){
+			const fontSize = 130;
+			const letterSpacing = 40;
+			const space = 60;
+			this.canvasText.font = fontSize + "px Arial";
+			this.canvasText.textAlign = "center";
+			var wholePix = last.length * (fontSize + letterSpacing) - letterSpacing + space + first.length * (fontSize + letterSpacing) - letterSpacing + space + honorific.length * (fontSize + letterSpacing) - letterSpacing;
+			var pixLastStart = 950 - wholePix / 2;
+			var pixFirstStart = pixLastStart + last.length * (fontSize + letterSpacing) - letterSpacing + space;
+			var pixHonorificStart = pixFirstStart + first.length * (fontSize + letterSpacing) - letterSpacing + space;
+			Array.prototype.forEach.call(last, function(v, i){
+				this.canvasText.fillText(v, 500, pixLastStart + (fontSize + letterSpacing) * i - letterSpacing);
+			});
+			Array.prototype.forEach.call(first, function(v, i){
+				this.canvasText.fillText(v, 500, pixFirstStart + (fontSize + letterSpacing) * i - letterSpacing);
+			});
+			Array.prototype.forEach.call(honorific, function(v, i){
+				this.canvasText.fillText(v, 500, pixHonorificStart + (fontSize + letterSpacing) * i - letterSpacing);
+			});
+		}
+		nameFromDisplay(last, first){
+			const fontSize = 60;
+			const letterSpacing = 10;
+			const space = 20;
+			this.canvasText.font = fontSize + "px Arial";
+			this.canvasText.textAlign = "center";
+			var wholePix = last.length * (fontSize + letterSpacing) - letterSpacing + space + first.length * (fontSize + letterSpacing) - letterSpacing;
+			var pixLastStart = 1236 - wholePix / 2;
+			var pixFirstStart = pixLastStart + last.length * (fontSize + letterSpacing) - letterSpacing + space;
+
+			Array.prototype.forEach.call(last, function(v, i){
+				this.canvasText.fillText(v, 135, pixLastStart + (fontSize + letterSpacing) * i - letterSpacing);
+			});
+			Array.prototype.forEach.call(first, function(v, i){
+				this.canvasText.fillText(v, 135, pixFirstStart + (fontSize + letterSpacing) * i - letterSpacing);
+			});
+		}
 	}
 </script>
 </body>
