@@ -149,7 +149,7 @@
 
 		var hyphenRegex = /[-|−|―|ー|‐|ｰ|－]/g;
 		addressArray.forEach(function(v, i){
-			v[5] = v[5].replace(hyphenRegex, "|");
+			v[5] = v[5].replace(hyphenRegex, "ǀ");
 		});
 
 		var exportString = "";
