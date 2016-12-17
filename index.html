@@ -147,6 +147,11 @@
 			return;
 		}
 
+		var hyphenRegex = /([-|−|―|ー|‐|ｰ])/;
+		addressArray.forEach(function(v, i){
+			v[5] = v[5].replace(hyphenRegex, "|");
+		});
+
 		var exportString = "";
 		for(let i = 1; i < addressArray.length; i++){
 			exportString += '<section class="sheet" id="printArea"><canvas class="sheetCanvas" id="hagaki_' + i + '"></canvas></section>';
