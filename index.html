@@ -147,7 +147,7 @@
 			return;
 		}
 
-		var hyphenRegex = /([-|−|―|ー|‐|ｰ])/;
+		var hyphenRegex = /[-|−|―|ー|‐|ｰ|－]/g;
 		addressArray.forEach(function(v, i){
 			v[5] = v[5].replace(hyphenRegex, "|");
 		});
@@ -228,8 +228,12 @@
 			if(fontSize * (i + 1) < whenNewLine * 1){
 				canvasText.fillText(v, 870, 330 + fontSize * i);
 				count++;
-			}else if(fontSize * (i + 1) < whenNewLine * 2){
-				canvasText.fillText(v, 870 - fontSize, 330 + fontSize * (i % count));
+			}else if(i < count * 2){
+				canvasText.fillText(v, 870 - (fontSize * 1), 330 + fontSize * (i % count));
+			}else if(i < count * 3){
+				canvasText.fillText(v, 870 - (fontSize * 2), 330 + fontSize * (i % count));
+			}else if(i < count * 4){
+				canvasText.fillText(v, 870 - (fontSize * 3), 330 + fontSize * (i % count));
 			}
 		});
 	}
