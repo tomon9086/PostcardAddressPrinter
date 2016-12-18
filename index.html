@@ -25,13 +25,17 @@
 				height: 148mm;
 			}
 		}*/
+		.resolutionSetting{
+			width: 3.6em;
+			text-align: right;
+		}
 		.sheet{
-			/*width: 100mm;
+			width: 100mm;
 			height: 148mm;
-			background-image: url(hagaki.png);
-			box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);
+			/*background-image: url(hagaki.png);*/
+			/*box-shadow: 0 .5mm 2mm rgba(0,0,0,.3);*/
 			background-size: cover;
-			page-break-after: always;*/
+			page-break-after: always;
 		}
 		.sheetCanvas{
 			width: 100mm;
@@ -48,12 +52,19 @@
 <input type="radio" id="shiftJis" name="charCode" /><span>Shift-JIS</span>
 <input type="file" id="selectFile" value="ファイル選択" />
 <div style="height: 1em;"></div>
-<div>2. プレビューを確認して印刷ボタンを押してください。<br>※印刷の設定から印刷サイズをはがきサイズ(100×148mm)に設定して、3ページめ以降を印刷してください。</div>
+<div>2. プレビューを確認して印刷ボタンを押してください。<br>※印刷の設定から印刷サイズをはがきサイズ(100×148mm)に設定して、3ページめ以降を印刷してください。<br>※一度に印刷する枚数が多いときは解像度を小さく設定してください。</div>
 <div style="height: 1em;"></div>
+<div>
 <input type="radio" onchange="hagakiOnChange();" id="normal" name="kind" checked="checked" /><span>普通はがき</span>
 <input type="radio" onchange="hagakiOnChange();" id="nenga" name="kind" /><span>年賀はがき</span>
+</div>
+<div>&nbsp;</div>
+<div><span>解像度 : </span><input type="number" id="resolutionSetting" class="resolutionSetting" value="100" min="30" max="9999" onchange="resolutionSet();" /><span> %</span></div>
+<div>&nbsp;</div>
+<div>
 <input type="button" value="印刷する" onclick="window.print();" />
 <input type="button" value="リセット" onclick="resetButtonOnClick();" />
+</div>
 <h4>【プレビュー】</h4>
 
 <div style="page-break-after: always;"></div>
@@ -66,6 +77,8 @@
 
 
 <script type="text/javascript">
+	const defaultResolution = 6;
+	var resolution = defaultResolution;
 	var kind = "";
 	var source = "";
 	hagakiOnChange();
@@ -121,6 +134,11 @@
 		}
 	}
 
+	function resolutionSet(){
+		var inputValue = document.getElementById("resolutionSetting").value;
+		if(inputValue >= 30 && inputValue < 10000){ resolution = defaultResolution * inputValue * 0.01; }
+		if(source){ hagakiGenerator(kind, source); }
+	}
 
 	function resetButtonOnClick(){
 		var select = confirm("Do you want to Reset?");
@@ -134,7 +152,7 @@
 		document.getElementById("printAreaSet").innerHTML = '<section class="sheet" id="printArea"></section>';
 		var addressArray = [];
 		var newLineRegex = /(.*)[\n|\r|\r\n]/g;
-		var addressBookRegex = /(.+) (.+)[ |　|\t]*,[ |　|\t]*(\d\d\d)-(\d\d\d\d)[ |　|\t]*,[ |　|\t]*(.+)[ |　|\t]*,[ |　|\t]*([1-9])/m;
+		var addressBookRegex = /(.+)[ |　]+(.+)[ |　|\t]*,[ |　|\t]*(\d\d\d)-(\d\d\d\d)[ |　|\t]*,[ |　|\t]*(.+)[ |　|\t]*,[ |　|\t]*([1-9])/m;
 		var receiverArray = source.match(newLineRegex);
 		receiverArray.forEach(function(v, i){
 			if(v.match(addressBookRegex) !== null){
@@ -165,8 +183,8 @@
 		var nameFrom = "";
 		addressArray.forEach(function(v, i){
 			if(i !== 0 && v !== null){
-				document.getElementById("hagaki_" + i).setAttribute("width", 100 * 10);
-				document.getElementById("hagaki_" + i).setAttribute("height", 148 * 10);
+				document.getElementById("hagaki_" + i).setAttribute("width", 100 * resolution);
+				document.getElementById("hagaki_" + i).setAttribute("height", 148 * resolution);
 				var canvas = document.getElementById("hagaki_" + i);
 				var canvasText = document.getElementById("hagaki_" + i).getContext("2d");
 			}
@@ -192,111 +210,111 @@
 	}
 
 	function zipcodeToDisplay(str, canvasText){
-		canvasText.font = "90px Arial";
+		canvasText.font = 9 * resolution + "px Arial";
 		canvasText.textAlign = "center";
-		canvasText.fillText(str[0], 467, 183);
-		canvasText.fillText(str[1], 537, 183);
-		canvasText.fillText(str[2], 607, 183);
-		canvasText.fillText(str[3], 685, 183);
-		canvasText.fillText(str[4], 752, 183);
-		canvasText.fillText(str[5], 822, 183);
-		canvasText.fillText(str[6], 892, 183);
+		canvasText.fillText(str[0], 46.7 * resolution, 18.3 * resolution);
+		canvasText.fillText(str[1], 53.7 * resolution, 18.3 * resolution);
+		canvasText.fillText(str[2], 60.7 * resolution, 18.3 * resolution);
+		canvasText.fillText(str[3], 68.5 * resolution, 18.3 * resolution);
+		canvasText.fillText(str[4], 75.2 * resolution, 18.3 * resolution);
+		canvasText.fillText(str[5], 82.2 * resolution, 18.3 * resolution);
+		canvasText.fillText(str[6], 89.2 * resolution, 18.3 * resolution);
 	}
 	function zipcodeFromDisplay(str, kind, canvasText){
 		if(kind === "nenga"){
-			correction = -153;
+			correction = -15.3 * resolution;
 		}else{
-			correction = 0;
+			correction = 0 * resolution;
 		}
-		canvasText.font = "65px Arial";
+		canvasText.font = 6.5 * resolution + "px Arial";
 		canvasText.textAlign = "center";
-		canvasText.fillText(str[0], 65, 1456 + correction);
-		canvasText.fillText(str[1], 105, 1456 + correction);
-		canvasText.fillText(str[2], 145, 1456 + correction);
-		canvasText.fillText(str[3], 196, 1456 + correction);
-		canvasText.fillText(str[4], 236, 1456 + correction);
-		canvasText.fillText(str[5], 276, 1456 + correction);
-		canvasText.fillText(str[6], 316, 1456 + correction);
+		canvasText.fillText(str[0], 6.5 * resolution, 145.6 * resolution + correction);
+		canvasText.fillText(str[1], 10.5 * resolution, 145.6 * resolution + correction);
+		canvasText.fillText(str[2], 14.5 * resolution, 145.6 * resolution + correction);
+		canvasText.fillText(str[3], 19.6 * resolution, 145.6 * resolution + correction);
+		canvasText.fillText(str[4], 23.6 * resolution, 145.6 * resolution + correction);
+		canvasText.fillText(str[5], 27.6 * resolution, 145.6 * resolution + correction);
+		canvasText.fillText(str[6], 31.6 * resolution, 145.6 * resolution + correction);
 	}
 	function addressToDisplay(str, canvasText){
-		const fontSize = 70;
-		const whenNewLine = 1100;
+		const fontSize = 7 * resolution;
+		const whenNewLine = 110 * resolution;
 		var count = 0;
 		canvasText.font = fontSize + "px Arial";
 		canvasText.textAlign = "center";
 		Array.prototype.forEach.call(str, function(v, i){
 			if(fontSize * (i + 1) < whenNewLine * 1){
-				canvasText.fillText(v, 870, 330 + fontSize * i);
+				canvasText.fillText(v, 87 * resolution, 33 * resolution + fontSize * i);
 				count++;
 			}else if(i < count * 2){
-				canvasText.fillText(v, 870 - (fontSize * 1), 330 + fontSize * (i % count));
+				canvasText.fillText(v, 87 * resolution - (fontSize * 1), 33 * resolution + fontSize * (i % count));
 			}else if(i < count * 3){
-				canvasText.fillText(v, 870 - (fontSize * 2), 330 + fontSize * (i % count));
+				canvasText.fillText(v, 87 * resolution - (fontSize * 2), 33 * resolution + fontSize * (i % count));
 			}else if(i < count * 4){
-				canvasText.fillText(v, 870 - (fontSize * 3), 330 + fontSize * (i % count));
+				canvasText.fillText(v, 87 * resolution - (fontSize * 3), 33 * resolution + fontSize * (i % count));
 			}
 		});
 	}
 	function addressFromDisplay(str, kind, canvasText){
 		if(kind === "nenga"){
-			correction = -153;
+			correction = -15.3 * resolution;
 		}else{
-			correction = 0;
+			correction = 0 * resolution
 		}
-		const fontSize = 45;
-		const whenNewLine = 600;
+		const fontSize = 4.5 * resolution;
+		const whenNewLine = 60 * resolution;
 		var count = 0;
 		canvasText.font = fontSize + "px Arial";
 		canvasText.textAlign = "center";
 		Array.prototype.forEach.call(str, function(v, i){
 			if(fontSize * (i + 1) < whenNewLine * 1){
-				canvasText.fillText(v, 300, 836 + fontSize * i + correction);
+				canvasText.fillText(v, 30 * resolution, 83.6 * resolution + fontSize * i + correction);
 				count++;
 			}else if(fontSize * (i + 1) < whenNewLine * 2){
-				canvasText.fillText(v, 300 - fontSize, 836 + fontSize * (i % count) + correction);
+				canvasText.fillText(v, 30 * resolution - fontSize, 83.6 * resolution + fontSize * (i % count) + correction);
 			}
 		});
 	}
 	function nameToDisplay(last, first, honorific, canvasText){
-		const fontSize = 130;
-		const letterSpacing = 40;
-		const space = 60;
+		const fontSize = 13 * resolution;
+		const letterSpacing = 4 * resolution;
+		const space = 6 * resolution;
 		canvasText.font = fontSize + "px Arial";
 		canvasText.textAlign = "center";
 		var wholePix = last.length * (fontSize + letterSpacing) - letterSpacing + space + first.length * (fontSize + letterSpacing) - letterSpacing + space + honorific.length * (fontSize + letterSpacing) - letterSpacing;
-		var pixLastStart = 930 - wholePix / 2;
+		var pixLastStart = 93 * resolution - wholePix / 2;
 		var pixFirstStart = pixLastStart + last.length * (fontSize + letterSpacing) - letterSpacing + space;
 		var pixHonorificStart = pixFirstStart + first.length * (fontSize + letterSpacing) - letterSpacing + space;
 		Array.prototype.forEach.call(last, function(v, i){
-			canvasText.fillText(v, 500, pixLastStart + (fontSize + letterSpacing) * i - letterSpacing);
+			canvasText.fillText(v, 50 * resolution, pixLastStart + (fontSize + letterSpacing) * i - letterSpacing);
 		});
 		Array.prototype.forEach.call(first, function(v, i){
-			canvasText.fillText(v, 500, pixFirstStart + (fontSize + letterSpacing) * i - letterSpacing);
+			canvasText.fillText(v, 50 * resolution, pixFirstStart + (fontSize + letterSpacing) * i - letterSpacing);
 		});
 		Array.prototype.forEach.call(honorific, function(v, i){
-			canvasText.fillText(v, 500, pixHonorificStart + (fontSize + letterSpacing) * i - letterSpacing);
+			canvasText.fillText(v, 50 * resolution, pixHonorificStart + (fontSize + letterSpacing) * i - letterSpacing);
 		});
 	}
 	function nameFromDisplay(last, first, kind, canvasText){
 		if(kind === "nenga"){
-			correction = -153;
+			correction = -15.3 * resolution;
 		}else{
-			correction = 0;
+			correction = 0 * resolution;
 		}
-		const fontSize = 60;
-		const letterSpacing = 10;
-		const space = 20;
+		const fontSize = 6 * resolution;
+		const letterSpacing = 1 * resolution;
+		const space = 2 * resolution;
 		canvasText.font = fontSize + "px Arial";
 		canvasText.textAlign = "center";
 		var wholePix = last.length * (fontSize + letterSpacing) - letterSpacing + space + first.length * (fontSize + letterSpacing) - letterSpacing;
-		var pixLastStart = 1236 + correction - wholePix / 2;
+		var pixLastStart = 123.6 * resolution + correction - wholePix / 2;
 		var pixFirstStart = pixLastStart + last.length * (fontSize + letterSpacing) - letterSpacing + space;
 
 		Array.prototype.forEach.call(last, function(v, i){
-			canvasText.fillText(v, 135, pixLastStart + (fontSize + letterSpacing) * i - letterSpacing);
+			canvasText.fillText(v, 13.5 * resolution, pixLastStart + (fontSize + letterSpacing) * i - letterSpacing);
 		});
 		Array.prototype.forEach.call(first, function(v, i){
-			canvasText.fillText(v, 135, pixFirstStart + (fontSize + letterSpacing) * i - letterSpacing);
+			canvasText.fillText(v, 13.5 * resolution, pixFirstStart + (fontSize + letterSpacing) * i - letterSpacing);
 		});
 	}
 
